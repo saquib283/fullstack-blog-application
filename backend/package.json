@@ -1,0 +1,40 @@
+{
+  "name": "my-backend",
+  "version": "1.0.0",
+  "description": "This is my backend learning app for learning backend development.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saquib283/my-backend.git"
+  },
+  "keywords": [
+    "mybackend",
+    "backend",
+    "backend-development"
+  ],
+  "author": "MD REHAN SAQUIB",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "prettier": "^3.2.2"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^1.41.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "isomorphic-dompurify": "^2.25.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.4",
+    "mongoose-aggregate-paginate-v2": "^1.0.7",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^4.2.1",
+    "slugify": "^1.6.6"
+  }
+}

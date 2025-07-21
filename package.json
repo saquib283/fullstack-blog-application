@@ -1,0 +1,22 @@
+{
+  "name": "blog-app",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd app-frontend && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  },
+  "dependencies": {
+    "lucide-react": "^0.525.0",
+    "react-hot-toast": "^2.5.2",
+    "zod": "^3.25.67"
+  }
+}
