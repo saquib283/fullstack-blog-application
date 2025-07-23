@@ -43,9 +43,12 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/blogs",blogRouter);
 app.use("/api/v1/admin",adminRouter);
 app.use("/api/v1/category",categoryRouter);
-app.use("/api/v1/comments",commentRouter)
+app.use("/api/v1/comments",commentRouter);
 
 
+app.get("/",(req,res)=>{
+  return res.send("<h1>Backend is running</h1>")
+})
 
 app.use((err,req,res,next)=>{
   console.error("Error Middleware Caught:", err);

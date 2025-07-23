@@ -5,11 +5,28 @@ const nextConfig = {
       {
         protocol: "http",
         hostname: "res.cloudinary.com",
-        pathname: "/**", 
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "source.unsplash.com",
+        pathname: "/**",
       },
     ],
-  domains: ['images.unsplash.com', 'source.unsplash.com'],
   },
+  webPackDevMiddleware:(config: { watchOptions: { poll: number; aggregateTimeout: number; }; })=>{
+    config.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+    };
+    return config;
+  },
+  
 };
 
 module.exports = nextConfig;

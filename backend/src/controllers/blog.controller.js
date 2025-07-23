@@ -156,9 +156,6 @@ export const createBlog = asyncHandler(async (req, res) => {
 
 
 export const getAllBlogs = asyncHandler(async (req, res) => {
-    if (!req.user) {
-        throw new ApiError(401, "You must be logged in to view blogs.");
-    }
     const blogs = await Blog.find()
         .populate("author", "fullname email username")
         .populate("category", "name")

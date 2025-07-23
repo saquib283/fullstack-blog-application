@@ -14,7 +14,7 @@ router.route("/create-blog").post(verifyJWT,upload.single('thumbnail'),createBlo
 router.route("/update-blog/:Id").patch(verifyJWT,updateBlog);
 router.route("/update-like").get(verifyJWT,updateLikes);
 router.route("/upload-blog-image").post( upload.single('image'), uploadTempImage);
-router.route("/getAllBlogs").get(verifyJWT,getAllBlogs);
+router.route("/getAllBlogs").get(getAllBlogs);
 router.route("/update-views").get(updateViews);
 router.route("/getblogbySlug/:slug").get(getBlogBySlug);
 router.route("/getblogbyId/:Id").post(getBlogById);

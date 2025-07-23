@@ -3,31 +3,31 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import {Comment} from "../models/comments.model.js";
 import { Blog } from "../models/blog.model.js";
-import { success } from "zod/v4";
 
 
-export const createComment = asyncHandler(async(req,res)=>{
-    const {id} = req.params;
+
+export const createComment = asyncHandler(async (req, res) => {
+    const { id } = req.params;
     const { content } = req.body;
-    if(!id){
-        return new ApiError(400,"Blog Id is required to comment")
+    if (!id) {
+        return new ApiError(400, "Blog Id is required to comment")
     }
-    if(!req.user){
-        return new ApiError(401,"You are not authorised to comment")
+    if (!req.user) {
+        return new ApiError(401, "You are not authorised to comment")
     }
 
     const blog = await Blog.findById(id);
-    if(!blog){
-        return new ApiError(404,"Request blog not found to comment");
+    if (!blog) {
+        return new ApiError(404, "Request blog not found to comment");
     }
 
-    if(!blog.allowComments){
+    if (!blog.allowComments) {
         throw new ApiError(403, "Commenting is disabled for this blog");
     }
 
     const newComment = await Comment.create({
-        user:req.user._id,
-        blog:blog._id,
+        user: req.user._id,
+        blog: blog._id,
         content
     })
     await newComment.save();
@@ -37,13 +37,56 @@ export const createComment = asyncHandler(async(req,res)=>{
     await blog.save();
 
     return res.status(201).json(
-        new ApiResponse(201,newComment,"comment added successfully")
+        new ApiResponse(201, newComment, "comment added successfully")
     )
 
 })
 
 
 
+export const replyToComment = asyncHandler(async (req, res) => {
+    const { parentId, content, blogId } = req.body;
+
+    if (!parentId || !content || !blogId) {
+        throw new ApiError(400, "parentId, content, and blogId are required");
+    }
+
+    if (!req.user) {
+        throw new ApiError(401, "You are not authorised to reply");
+    }
+
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+        throw new ApiError(404, "Blog not found");
+    }
+
+    if (!blog.allowComments) {
+        throw new ApiError(403, "Commenting is disabled for this blog");
+    }
+
+    const parentComment = await Comment.findById(parentId);
+    if (!parentComment) {
+        throw new ApiError(404, "Parent comment not found");
+    }
+
+    if (parentComment.blog.toString() !== blog._id.toString()) {
+        throw new ApiError(400, "Parent comment does not belong to this blog");
+    }
+
+    const reply = await Comment.create({
+        user: req.user._id,
+        blog: blog._id,
+        content,
+        parentId
+    });
+
+    blog.comments.push(reply._id);
+    await blog.save();
+
+    return res.status(201).json(
+        new ApiResponse(201, reply, "Reply added successfully")
+    );
+});
 
 
 
