@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import cron from "node-cron";
 import { cleanupUnusedImages } from "./utils/cleanupUnusedImages.js";
-
+import { syncLikesAndViewsToMongo } from "./utils/syncLikesAndViews.js";
 const app = express();
 
 app.use(
@@ -31,12 +31,18 @@ cron.schedule('0 * * * *', async () => {
   await cleanupUnusedImages();
 });
 
+cron.schedule('* * * * *', async () => {
+  await syncLikesAndViewsToMongo();
+});
+
+
 
 import userRouter from "./routes/user.routes.js";
 import blogRouter from "./routes/blog.route.js";
 import adminRouter from "./routes/admin.route.js";
 import categoryRouter from "./routes/category.route.js";
 import commentRouter from "./routes/comment.route.js";
+
 
 
 app.use("/api/v1/users", userRouter);

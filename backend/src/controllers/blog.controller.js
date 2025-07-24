@@ -8,6 +8,7 @@ import { User } from "../models/user.model.js";
 import mongoose from "mongoose";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { BlogImageUpload } from "../models/blogImageUpload.model.js";
+import redisClient from "../config/redisClient.js";
 
 
 
@@ -169,6 +170,12 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
         })
         .sort({ createdAt: -1 });
 
+        if(!blogs){
+            return res.status(404).json(
+                new ApiError(404,"Blog not found")
+            )
+        }
+
     res.status(200).json({
         success: true,
         count: blogs.length,
@@ -206,9 +213,57 @@ export const getBlogById = asyncHandler(async (req, res) => {
 
 
 
+// export const getBlogBySlug = asyncHandler(async (req, res) => {
+//     const slug = req.params.slug;
+//     console.log(slug);
+
+//     if (!slug) {
+//         throw new ApiError(400, "Slug is required.");
+//     }
+
+//     const blog = await Blog.findOne({ slug })
+//         .populate("author", "fullname username email")
+//         .populate("category", "name subCategories")
+//         .populate({ // This is the correct way for nested population
+//             path: 'comments', // Target the 'comments' array in the Blog model
+//             // No 'select' here means all fields from the Comment document will be included
+//             populate: {       // Nested populate for the author within each comment
+//                 path: 'user',   // Target the 'user' field in the Comment model (which references User)
+//                 // No 'select' here means all fields from the User document will be included
+//             }
+//         })
+//         .lean();
+
+//     if (!blog) {
+//         throw new ApiError(404, "Blog not found.");
+//     }
+
+//     const blogId = blog._id.toString();
+
+//     const [cachedLikes, cachedViews] = await Promise.all([
+//         redisClient.scard(`blog:${blogId}:likedBy`),
+//         redisClient.get(`blog:${blogId}:views`)
+//     ]);
+
+//     blog.likesCount = cachedLikes !== null ? parseInt(cachedLikes, 10) : blog.likes?.length || 0;
+//     blog.viewCount = cachedViews !== null ? parseInt(cachedViews, 10) : blog.views || 0;
+
+//     if (req.user && req.user._id) {
+//         const liked = await redisClient.sismember(`blog:${blogId}:likedBy`, req.user._id.toString());
+//         blog.likedByCurrentUser = liked === 1;
+//     }
+
+//     res.status(200).json(
+//         new ApiResponse(200,blog,"Fetched blog by id")
+//     );
+// });
+
+
+
+
 export const getBlogBySlug = asyncHandler(async (req, res) => {
     const slug = req.params.slug;
-    console.log(slug);
+    console.log("👉 Slug param:", slug);
 
     if (!slug) {
         throw new ApiError(400, "Slug is required.");
@@ -217,28 +272,54 @@ export const getBlogBySlug = asyncHandler(async (req, res) => {
     const blog = await Blog.findOne({ slug })
         .populate("author", "fullname username email")
         .populate("category", "name subCategories")
-        .populate({ // This is the correct way for nested population
-            path: 'comments', // Target the 'comments' array in the Blog model
-            // No 'select' here means all fields from the Comment document will be included
-            populate: {       // Nested populate for the author within each comment
-                path: 'user',   // Target the 'user' field in the Comment model (which references User)
-                // No 'select' here means all fields from the User document will be included
-            }
+        .populate({
+            path: "comments",
+            populate: {
+                path: "user",
+            },
         })
         .lean();
 
-    console.log("Blog ---- "+blog);
-
-
     if (!blog) {
+        console.warn("⚠️ Blog not found for slug:", slug);
         throw new ApiError(404, "Blog not found.");
     }
 
-    res.status(200).json({
-        success: true,
-        blog,
-    });
+    const blogId = blog._id?.toString();
+    console.log("📄 Blog ID:", blogId);
+
+    // Defaults
+    blog.likesCount = 0;
+    blog.viewCount = 0;
+    blog.likedByCurrentUser = false;
+
+    try {
+        const [likes, views] = await Promise.all([
+            redisClient.sCard(`blog:${blogId}:likedBy`),
+            redisClient.get(`blog:${blogId}:views`),
+        ]);
+
+        blog.likesCount = likes ?? 0;
+        blog.viewCount = views ? parseInt(views, 10) : 0;
+    } catch (err) {
+        console.error("❌ Redis error:", err.message);
+    }
+
+    try {
+        const userId = req.user?._id?.toString();
+        if (userId) {
+            const liked = await redisClient.sIsMember(`blog:${blogId}:likedBy`, userId);
+            blog.likedByCurrentUser = liked;
+        }
+    } catch (err) {
+        console.error("❌ Redis sIsMember error:", err.message);
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, blog, "Fetched blog by slug")
+    );
 });
+
 
 
 

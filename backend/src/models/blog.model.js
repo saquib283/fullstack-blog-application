@@ -77,22 +77,11 @@ const blogSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Share"
     }],
-    viewBy: [{
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        },
-        interactionTime :{
-            type:Number,
-            default:0
-        }
-    }],
     views:{
         type:Number,
         default:0
     },
     
-
     status: {
         type: String,
         enum: ["draft", "published", "archived"],

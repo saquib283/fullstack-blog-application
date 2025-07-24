@@ -42,7 +42,7 @@ const io = new Server(server, {
     },
 });
 
-initializeSocket(io); // 👈 Attach socket handlers
+initializeSocket(io); 
 
 connectDB()
     .then(() => {
@@ -51,5 +51,5 @@ connectDB()
         });
     })
     .catch((err) => {
-        console.error('❌ DB Connection failed:', err);
+        console.error(' DB Connection failed:', err);
     });

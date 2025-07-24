@@ -114,13 +114,16 @@ export const Navbar = () => {
                                         onClick={() => setShowDropdown(!showDropdown)}
                                         className="focus:outline-none"
                                     >
-                                        <Image
-                                            src={user.profilePicture || avatar}
-                                            alt={user.username}
-                                            width={36}
-                                            height={36}
-                                            className="rounded-full border-2 border-orange-500 cursor-pointer"
-                                        />
+
+                                        <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-orange-500 cursor-pointer">
+                                            <Image
+                                                src={user.profilePicture || avatar}
+                                                alt={user.username}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+
                                     </button>
 
                                     <AnimatePresence>

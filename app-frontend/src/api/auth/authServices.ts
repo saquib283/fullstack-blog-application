@@ -2,12 +2,14 @@ import axios from "@/lib/axios";
 import { useAuthStore } from "@/store/authStore";
 
 
+
 export const login = async (credentials: { username: string; password: string }) => {
   try {
     const res = await axios.post("/users/login", credentials);
     const { user, accessToken, refreshToken } = res.data.data;
     console.log("User Data:", user);
     const formattedUser = {
+      _id:user._id,
       id: user._id,
       username: user.username,
       email: user.email,
@@ -33,9 +35,17 @@ export const register = async (formData: FormData) => {
         "Content-Type": "multipart/form-data",
       },
     });
-    const user = res?.data?.data?.user;
+    const user = res?.data?.data;
+    console.log("User :",user);
+    
+
+    if (!user || !user._id) {
+      console.error("User object is malformed or missing.");
+      throw new Error("User data is not returned correctly from the server.");
+    }
 
     const formattedUser = {
+      _id:user._id,
       id: user._id,
       username: user.username,
       email: user.email,

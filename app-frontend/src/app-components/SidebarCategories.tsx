@@ -2,7 +2,10 @@
 import { getAllCategories } from "@/api/blogs/categories";
 import { Card, CardContent } from "@/components/ui/card";
 import { FolderOpen } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { it } from "node:test";
 import { useEffect, useState } from "react";
+
 
 const Spinner = () => (
     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -17,6 +20,7 @@ interface Category {
 function SidebarCategories() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -54,6 +58,7 @@ function SidebarCategories() {
                             <li
                                 key={item._id}
                                 className="flex items-center gap-2 bg-tagsbg p-2 rounded text-white cursor-pointer"
+                                onClick={()=>router.push(`/categories/${item._id}`)}
                             >
                                 {item.name}
                             </li>

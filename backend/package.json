@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
-    "start": "node -r dotenv/config --experimental-json-modules src/index.js"
+    "start": "node -r dotenv/config --experimental-json-modules src/index.js",
+    "seed:categories": "node -r dotenv/config src/scripts/seedCategories.js"
+
   },
   "type": "module",
   "repository": {

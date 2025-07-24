@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import {CommentType} from "@/types/blog"
 
 interface CommentUser {
     username: React.ReactNode;

@@ -62,7 +62,7 @@ export default function TrendingComponent() {
                                     <Eye size={16} /> {blog.views.toLocaleString()}
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <ThumbsUp size={16} /> {blog.likes.toLocaleString()}
+                                    <ThumbsUp size={16} /> {blog.likes.length}
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <Share2 size={16} /> {blog.shares.toLocaleString()}
